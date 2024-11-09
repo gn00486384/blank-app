@@ -8,7 +8,7 @@ import json
 # 2024年投保級距設定
 INSURANCE_BRACKETS = {
     'health_insurance': {
-        'min': 26400,
+        'min': 27470,
         'max': 219500,
         'brackets': [
             27470, 27600, 28800, 30300, 31800, 33300, 34800, 36300, 37800,
