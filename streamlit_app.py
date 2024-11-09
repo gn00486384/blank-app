@@ -118,24 +118,26 @@ def calculate_insurance_fees(employee_data, occupational_rate):
         days_list = calculate_days_in_period(start_date, end_date)
         current_date = start_date
         
-        for days in days_list:
+         for days in days_list:
             month_key = f"{current_date.year}-{current_date.month:02d}"
             total_days = 30  # 標準月份天數
             if current_date.month == 2:
                 total_days = 29 if calendar.isleap(current_date.year) else 28
             
-            # 計算各項保費
             if is_elderly:
-                labor_fee = 0
+                labor_fee = 0  # 請領老年給付不用繳勞保
                 pension_fee = 0
-                # 職災保險費
-                occupational_fee = round(labor_bracket * (occupational_rate/100) * days / total_days)
+                # 只計算職災保險費
+                occupational_fee = round(labor_bracket * (occupational_rate/100) * days / 30)
             else:
-                # 勞保費 (10.5% * 20%)
-                labor_fee = round(labor_bracket * 0.105 * 0.2 * days / total_days)
-                # 勞退金 (6%) - 外籍人士無勞退
-                pension_fee = 0 if is_foreign else round(raw_salary * 0.06 * days / total_days)
-                occupational_fee = 0
+                # 勞保費計算
+                base_labor_fee = round(labor_bracket * 0.105 * 0.2 * days / 30)  # 普通事故保險費
+                occupation_labor_fee = round(labor_bracket * (occupational_rate/100) * days / 30)  # 職災保險費
+                labor_fee = base_labor_fee + occupation_labor_fee
+                
+                # 勞退金計算 (6%) - 外籍人士無勞退
+                pension_fee = 0 if is_foreign else round(raw_salary * 0.06 * days / 30)
+                occupational_fee = 0  # 職災已包含在勞保費中
             
             # 健保費計算
             if has_health_insurance:
