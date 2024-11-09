@@ -223,7 +223,7 @@ def main():
                     "實際薪資",
                     min_value=0,
                     max_value=250000,
-                    value=26400,
+                    value=27470,
                     step=100,
                     key="salary_input_raw",
                     help="請輸入實際薪資金額"
