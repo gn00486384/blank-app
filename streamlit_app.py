@@ -118,7 +118,7 @@ def calculate_insurance_fees(employee_data, occupational_rate):
         days_list = calculate_days_in_period(start_date, end_date)
         current_date = start_date
         
-         for days in days_list:
+        for days in days_list:
             month_key = f"{current_date.year}-{current_date.month:02d}"
             total_days = 30  # 標準月份天數
             if current_date.month == 2:
