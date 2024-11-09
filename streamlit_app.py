@@ -131,7 +131,7 @@ def calculate_insurance_fees(employee_data, occupational_rate):
                 occupational_fee = round(labor_bracket * (occupational_rate/100) * days / 30)
             else:
                 # 勞保費計算
-                base_labor_fee = round(labor_bracket * 0.105 * 0.2 * days / 30)  # 普通事故保險費
+                base_labor_fee = round(labor_bracket * 0.11 * 0.2 * days / 30)  # 普通事故保險費
                 occupation_labor_fee = round(labor_bracket * (occupational_rate/100) * days / 30)  # 職災保險費
                 labor_fee = base_labor_fee + occupation_labor_fee
                 
