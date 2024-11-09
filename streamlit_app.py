@@ -121,35 +121,34 @@ def calculate_insurance_fees(employee_data, occupational_rate):
         for days in days_list:
             month_key = f"{current_date.year}-{current_date.month:02d}"
             total_days = 30  # 標準月份天數
-            if current_date.month == 2:
-                total_days = 29 if calendar.isleap(current_date.year) else 28
             
             if is_elderly:
-                labor_fee = 0  # 請領老年給付不用繳勞保
+                labor_fee = 0
+                employment_fee = 0
                 pension_fee = 0
-                # 只計算職災保險費
+                # 職災保險費
                 occupational_fee = round(labor_bracket * (occupational_rate/100) * days / 30)
             else:
-                # 勞保費計算
-                base_labor_fee = round(labor_bracket * 0.11 * 0.2 * days / 30)  # 普通事故保險費
-                occupation_labor_fee = round(labor_bracket * (occupational_rate/100) * days / 30)  # 職災保險費
-                labor_fee = base_labor_fee + occupation_labor_fee
-                
-                # 勞退金計算 (6%) - 外籍人士無勞退
+                # 勞保費 (11% * 20%)
+                labor_fee = round(labor_bracket * 0.11 * 0.2 * days / 30)
+                # 就保費 (1% * 20%)
+                employment_fee = round(labor_bracket * 0.01 * 0.2 * days / 30)
+                # 勞退金 (6%) - 外籍人士無勞退
                 pension_fee = 0 if is_foreign else round(raw_salary * 0.06 * days / 30)
-                occupational_fee = 0  # 職災已包含在勞保費中
+                occupational_fee = 0
             
-            # 健保費計算
+            # 健保費計算 (5.17% * 30%)
             if has_health_insurance:
-                # 計算有效眷屬人數（最多到4人）
                 effective_dependents = min(3, dependents)  # 本人+眷屬最多4人
-                health_fee_base = round(health_bracket * 0.0517 * 0.3 * days / total_days)
-                dependent_fee = round(health_bracket * 0.0517 * 0.3 * days / total_days * effective_dependents)
+                health_fee_base = round(health_bracket * 0.0517 * 0.3 * days / 30)
+                dependent_fee = round(health_bracket * 0.0517 * 0.3 * days / 30 * effective_dependents)
                 total_health_fee_month = health_fee_base + dependent_fee
             else:
                 total_health_fee_month = 0
             
-            # 加入結果
+            # 總勞保費 = 勞保費 + 就保費
+            total_labor_fee = labor_fee + employment_fee
+            
             results.append({
                 "姓名": name,
                 "年月": month_key,
@@ -159,10 +158,12 @@ def calculate_insurance_fees(employee_data, occupational_rate):
                 "眷屬人數": dependents,
                 "不計人數": dependents_not_counted,
                 "勞保費": labor_fee,
+                "就保費": employment_fee,
+                "總勞保費": total_labor_fee,
                 "健保費": total_health_fee_month,
                 "勞退金": pension_fee,
                 "職災保險費": occupational_fee,
-                "小計": labor_fee + total_health_fee_month + pension_fee + occupational_fee,
+                "小計": total_labor_fee + total_health_fee_month + pension_fee + occupational_fee,
                 "備註": "請領老年給付" if is_elderly else ("外籍人士" if is_foreign else "")
             })
             
